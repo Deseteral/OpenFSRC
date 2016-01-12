@@ -1,50 +1,43 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
-using System.Runtime.InteropServices;
+using OpenFSRC.DataStructures;
+using System;
 using System.Windows;
 using System.Windows.Interop;
 
 namespace OpenFSRC
 {
-    class FSXSimulation : ISimulation
+    class FSXSimulation : Simulation
     {
         private SimConnect sim;
-
         private const int WM_USER_SIMCONNECT = 0x0402;
-
-        private bool connected;
-        public bool Connected
+        
+        public override void Connect()
         {
-            get
-            {
-                return connected;
-            }
-
-            private set
-            {
-                connected = value;
-            }
-        }
-
-        public void Connect()
-        {
-            if (connected)
+            if (Connected)
                 return;
 
-            connected = true;
+            Connected = true;
 
             try
             {
+                WindowInteropHelper wih = new WindowInteropHelper(Application.Current.MainWindow);
+
                 sim = new SimConnect(
                     "OpenFSRC",
-                    new WindowInteropHelper(Application.Current.MainWindow).Handle,
+                    wih.Handle,
                     WM_USER_SIMCONNECT,
                     null,
                     0
                 );
+                
+                HwndSource hs = HwndSource.FromHwnd(wih.Handle);
+                hs.AddHook(new HwndSourceHook(DefWndProcWpf));
+
+                InitializeAPI();
             }
-            catch (COMException ex)
+            catch (Exception ex)
             {
-                connected = false;
+                Connected = false;
 
                 MessageBox.Show(
                     "A connection to the FSX could not be established. Make sure that FSX is running.",
@@ -55,9 +48,9 @@ namespace OpenFSRC
             }
         }
 
-        public void Disconnect()
+        public override void Disconnect()
         {
-            if (!connected)
+            if (!Connected)
                 return;
 
             if (sim != null)
@@ -66,7 +59,62 @@ namespace OpenFSRC
                 sim = null;
             }
 
-            connected = false;
+            Connected = false;
+        }
+
+        public override void Update()
+        {
+            // PositionInformation
+            sim.RequestDataOnSimObjectType(
+                Requests.PositionInformationRequest,
+                Definitions.PositionInformation,
+                0,
+                SIMCONNECT_SIMOBJECT_TYPE.USER
+            );
+        }
+
+        private void DataReceived(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
+        {
+            switch ((Requests)data.dwRequestID)
+            {
+                case Requests.PositionInformationRequest:
+                    Data.PositionInformation = (PositionInformation)data.dwData[0];
+                    break;
+
+                default:
+                    Console.WriteLine("Unknown request ID: " + data.dwRequestID);
+                    break;
+            }
+        }
+
+        private void InitializeAPI()
+        {
+            // Define a data structures
+
+            // PositionInformation
+            sim.AddToDataDefinition(Definitions.PositionInformation, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            sim.AddToDataDefinition(Definitions.PositionInformation, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            sim.AddToDataDefinition(Definitions.PositionInformation, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            sim.RegisterDataDefineStruct<PositionInformation>(Definitions.PositionInformation);
+
+            // Data received callback
+            sim.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(DataReceived);
+        }
+
+        private IntPtr DefWndProcWpf(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            handled = false;
+
+            if (msg == WM_USER_SIMCONNECT)
+            {
+                if (Connected && sim != null)
+                {
+                    sim.ReceiveMessage();
+                    handled = true;
+                }
+            }
+
+            return (IntPtr)0;
         }
     }
 }
