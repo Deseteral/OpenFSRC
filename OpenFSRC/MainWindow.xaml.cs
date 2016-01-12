@@ -59,9 +59,6 @@ namespace OpenFSRC
         private void updateTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             simulation.Update();
-
-            Console.WriteLine(simulation.Data.PositionInformation.Latitude);
-            Console.WriteLine(simulation.Data.PositionInformation.Longitude);
         }
 
         private void buttonDisconnect_Click(object sender, RoutedEventArgs e)
