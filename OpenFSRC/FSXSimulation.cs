@@ -33,7 +33,7 @@ namespace OpenFSRC
                 HwndSource hs = HwndSource.FromHwnd(wih.Handle);
                 hs.AddHook(new HwndSourceHook(DefWndProcWpf));
 
-                InitializeAPI();
+                InitializeApi();
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace OpenFSRC
             }
         }
 
-        private void InitializeAPI()
+        private void InitializeApi()
         {
             // Define a data structures
 

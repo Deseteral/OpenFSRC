@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="OpenFSRC" Width="300" Height="220" MinWidth="300" MinHeight="220" Closing="Window_Closing" Initialized="Window_Initialized">
     <Grid>
-        <Button x:Name="buttonConnect" Content="Connect to FSX" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="buttonConnect_Click"/>
-        <Button x:Name="buttonDisconnect" Content="Disconnect from FSX" HorizontalAlignment="Left" Margin="102,10,0,0" VerticalAlignment="Top" Width="122" Click="buttonDisconnect_Click"/>
+        <Button x:Name="buttonConnect" Content="Start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="buttonConnect_Click"/>
+        <Button x:Name="buttonDisconnect" Content="Stop" HorizontalAlignment="Left" Margin="46,10,0,0" VerticalAlignment="Top" Click="buttonDisconnect_Click"/>
     </Grid>
 </Window>

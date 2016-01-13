@@ -34,6 +34,7 @@ namespace OpenFSRC.Networking
             HostConfiguration config = new HostConfiguration();
             config.UrlReservations.CreateAutomatically = true;
 
+            // TODO: Allow user to change the port
             using (var host = new NancyHost(config, new Uri("http://localhost:8957")))
             {
                 try

@@ -52,6 +52,7 @@ namespace OpenFSRC
             if (!simulation.Connected)
                 return;
 
+            // TODO: Allow user to change the interval
             updateTimer = new Timer(500);
             updateTimer.Elapsed += updateTimer_Elapsed;
             updateTimer.Start();
