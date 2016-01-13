@@ -6,7 +6,7 @@ using System.Windows.Interop;
 
 namespace OpenFSRC
 {
-    class FSXSimulation : Simulation
+    public class FSXSimulation : Simulation
     {
         private SimConnect sim;
         private const int WM_USER_SIMCONNECT = 0x0402;
@@ -64,6 +64,9 @@ namespace OpenFSRC
 
         public override void Update()
         {
+            if (!Connected)
+                return;
+
             // PositionInformation
             sim.RequestDataOnSimObjectType(
                 Requests.PositionInformationRequest,
