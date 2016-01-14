@@ -1,6 +1,7 @@
 ﻿using Nancy;
 using Nancy.Hosting.Self;
 using System;
+using System.IO;
 using System.Threading;
 using System.Windows;
 
@@ -9,10 +10,29 @@ namespace OpenFSRC.Networking
     public class HttpServer : NancyModule
     {
         private Thread hostThread;
-        
+
+        private static string indexSource;
+
         public HttpServer()
         {
-            Get["/"] = _ => "OpenFSRC";
+            // Read _index.html file
+            try
+            {
+                string path = Directory.GetCurrentDirectory() + "/Content/_index.html";
+                using (StreamReader sr = new StreamReader(path))
+                {
+                    indexSource = sr.ReadToEnd();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("_index.html could not be read:");
+                Console.WriteLine(e.Message);
+            }
+
+            Get["/"] = _ => {
+                return indexSource;
+            };
         }
 
         public void Start()
