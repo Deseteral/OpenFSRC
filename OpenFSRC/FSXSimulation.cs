@@ -39,6 +39,8 @@ namespace OpenFSRC
             {
                 Connected = false;
 
+                Logger.Log("A connection to the FSX could not be established. Make sure that FSX is running.");
+
                 MessageBox.Show(
                     "A connection to the FSX could not be established. Make sure that FSX is running.",
                     "Error",
@@ -85,7 +87,7 @@ namespace OpenFSRC
                     break;
 
                 default:
-                    Console.WriteLine("Unknown request ID: " + data.dwRequestID);
+                    Logger.Log("Unknown request ID: " + data.dwRequestID);
                     break;
             }
         }

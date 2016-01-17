@@ -54,32 +54,53 @@ namespace OpenFSRC
             }
         }
 
+        private void Shutdown()
+        {
+            Logger.Log("Shutting down all systems");
+
+            if (updateTimer != null)
+                updateTimer.Stop();
+
+            http.Stop();
+
+            if (simulation != null)
+                simulation.Disconnect();
+
+            Logger.Log("Stop.");
+        }
+
         private void buttonConnect_Click(object sender, RoutedEventArgs e)
         {
+            Logger.Log("Connecting to FSX...");
             simulation = new FSXSimulation();
             simulation.Connect();
 
             if (!simulation.Connected)
                 return;
 
+            Logger.Log("Successfully connected to FSX...");
+
             // TODO: Allow user to change the interval
             updateTimer = new Timer(500);
             updateTimer.Elapsed += updateTimer_Elapsed;
             updateTimer.Start();
 
+            Logger.Log("Staring HTTP server...");
             http.Start();
+
+            Logger.Log("Staring WebSockets server...");
             webSocketServer.Start(socket =>
             {
                 socket.OnOpen = () =>
                 {
                     webSockets.Add(socket);
-                    Console.WriteLine("WebSocket connected!");
+                    Logger.Log("WebSocket connected!");
                 };
 
                 socket.OnClose = () =>
                 {
                     webSockets.Remove(socket);
-                    Console.WriteLine("WebSocket closed!");
+                    Logger.Log("WebSocket closed!");
                 };
             });
 
@@ -99,23 +120,13 @@ namespace OpenFSRC
 
         private void buttonDisconnect_Click(object sender, RoutedEventArgs e)
         {
-            if (updateTimer != null)
-                updateTimer.Stop();
-
-            http.Stop();
-
-            if (simulation != null)
-                simulation.Disconnect();
-
+            Shutdown();
             UpdateStatus();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            http.Stop();
-
-            if (simulation != null)
-                simulation.Disconnect();
+            Shutdown();
         }
     }
 }

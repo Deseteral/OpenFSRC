@@ -26,8 +26,8 @@ namespace OpenFSRC
             }
             catch (Exception e)
             {
-                Console.WriteLine("_index.html could not be read:");
-                Console.WriteLine(e.Message);
+                Logger.Log("_index.html could not be read:");
+                Logger.Log(e.Message);
             }
 
             Get["/"] = _ => {
@@ -66,6 +66,8 @@ namespace OpenFSRC
                 }
                 catch (AutomaticUrlReservationCreationFailureException ex)
                 {
+                    Logger.Log("Couldn't start HTTP server on this port");
+
                     MessageBox.Show(
                         "Couldn't start HTTP server on this port",
                         "Error",

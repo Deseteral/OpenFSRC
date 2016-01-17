@@ -85,6 +85,7 @@
     <Compile Include="DataStructures.cs" />
     <Compile Include="FSXSimulation.cs" />
     <Compile Include="HttpServer.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
