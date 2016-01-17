@@ -1,4 +1,4 @@
-var connection = new WebSocket('ws://localhost:8958');
+var connection = new WebSocket('ws://' + window.location.hostname + ':8958');
 var app = null;
 
 window.addEventListener('DOMContentLoaded', function() {
