@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Windows;
 
-namespace OpenFSRC.Networking
+namespace OpenFSRC
 {
     public class HttpServer : NancyModule
     {
